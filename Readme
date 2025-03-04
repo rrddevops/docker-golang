@@ -1,13 +1,13 @@
-#Criando uma imagem de docker pequena com go lang
+#Criando uma imagem de docker pequena com golang
 Nosso desafio será: 
-  Criar uma imagem pequena, que não ultrapsse 2 MB e rode uma aplicação em go lang.
+  Criar uma imagem pequena, que não ultrapsse 2 MB e rode uma aplicação em golang.
 
 ##Começando
 Pra começar vamos consultar o site da Go Lang e ver como se faz um Hello World:
   https://go.dev/doc/tutorial/getting-started
 
 
-O primeiro passo será criar uma pasta vamos chamar de essa pasta com o nome de goapp
+O primeiro passo será criar uma pasta vamos chamar de essa pasta com o nome de docker-golang:
 
 ```
 mkdir docker-golang
@@ -15,13 +15,15 @@ mkdir docker-golang
 cd docker-golang
 ```
 
-Dentro dessa pasta vamos inicializar uma aplicação go
+Dentro dessa pasta vamos inicializar uma aplicação go:
 
 ```
 go mod init main
+```
 
-Agora vamos criar um arquivo chamado hello.go com o seguinte conteúdo
+Agora vamos criar um arquivo chamado main.go com o seguinte conteúdo:
 
+```
 package main
 
 import "fmt"
@@ -84,7 +86,7 @@ Também vamos utilizar na imagem de build uma versão mais enxuta chamada alpine
 ##Então pra começar vamos alterar o nosso Dockerfile
 
 ```
-FROM golang:1.21-alpine as builder
+FROM golang:1.21-alpine AS builder
 WORKDIR /usr/src/app
 COPY . .
 RUN go mod download && go mod verify
