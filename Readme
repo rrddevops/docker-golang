@@ -1,14 +1,16 @@
-Criando uma imagem de docker pequena com go lang
+#Criando uma imagem de docker pequena com go lang
 Nosso desafio será: 
   Criar uma imagem pequena, que não ultrapsse 2 MB e rode uma aplicação em go lang.
 
-*Começando
+##Começando
 Pra começar vamos consultar o site da Go Lang e ver como se faz um Hello World:
   https://go.dev/doc/tutorial/getting-started
 
-1 - O primeiro passo será criar uma pasta vamos chamar de essa pasta com o nome de goapp
 
-```mkdir docker-golang
+O primeiro passo será criar uma pasta vamos chamar de essa pasta com o nome de goapp
+
+```
+mkdir docker-golang
 
 cd docker-golang
 ```
@@ -28,27 +30,24 @@ func main() {
 	fmt.Println("Full Cycle Rocks!!")
 }
 ```
+
 Podemos executar nossa aplicação:
-  ```
+
+```
 go run .
 
 Full Cycle Rocks!!
 ```
 
-2 - Criando a imagem para o container
+##Criando a imagem para o container
 Agora queremos criar uma imagem docker para o nosso container, sendo assim vamos criar um Dockerfile
 
 ```
 FROM golang:1.21
-
 WORKDIR /usr/src/app
-
 COPY . .
-
 RUN go mod download && go mod verify
-
 RUN go build -v -o /usr/local/bin/app ./...
-
 CMD ["app"]
 ```
 
@@ -59,6 +58,7 @@ docker build -t rodrigordavila/golang:latest .
 ```
 
 Podemos conferir se a imagem foi criada
+
 ```
 docker images                      
 REPOSITORY               TAG       IMAGE ID       CREATED             SIZE
@@ -66,12 +66,13 @@ rodrigordavila/golang:latest       latest    bce6cf8d8c75   15 minutes ago   841
 ```
 
 E executar a nossa imagem
+
 ```
 docker run rodrigordavila/golang    
 Full Cycle Rocks!!
 ```
 
-Porém nossa imagem está muito grande ainda 841 MB.
+##Porém nossa imagem está muito grande ainda 841 MB.
 
 Multi Staging Build
 O multi stage build nos permite construir nossa imagem com multiplos estágios, nossa imagem ficou grande pois tudo está incluso nela, então o que vamos fazer é separar o build da aplicação do seu container de execução.
@@ -80,27 +81,20 @@ Na imagem de execução que vai ser nossa imagem final, vai ter apenas o execut�
 
 Também vamos utilizar na imagem de build uma versão mais enxuta chamada alpine da linguagem go e na imagem de execução uma imagem base bem enxuta chamada scratch.
 
-Então pra começar vamos alterar o nosso Dockerfile
+##Então pra começar vamos alterar o nosso Dockerfile
 
 ```
 FROM golang:1.21-alpine as builder
-
 WORKDIR /usr/src/app
-
 COPY . .
-
 RUN go mod download && go mod verify
-
 RUN go build -v -o /usr/local/bin/app ./...
-
 FROM scratch
-
 COPY --from=builder /usr/local/bin/app /usr/local/bin/app
-
 CMD ["/usr/local/bin/app"]
 ```
 
-Após a alteração vamos buildar novamente
+##Após a alteração vamos buildar novamente
 
 docker build -t rodrigordavila/golang:latest .
 
@@ -121,7 +115,7 @@ docker run rodrigordavila/golang
 Full Cycle Rocks!!
 ```
 
-Agora vamos colocar nossa imagem no registry do docker hub.
+##Agora vamos colocar nossa imagem no registry do docker hub.
 
 Subindo nossa imagem no dockerhub
 Primeiramente se você não tem uma conta no docker hub criee uma.
@@ -132,6 +126,7 @@ E faça login na sua máquina utilizando seu usuário e senha do docker hub
 docker login -u seu-usuario-docker-hub
 Password:
 ```
+
 Digite seu username do docker hub e sua senha.
 
 Se tudo deu certo você deve ver a mensagem Login Succeeded
@@ -144,16 +139,18 @@ docker push rodrigordavila/golang:latest
 
 Feito isso provavelmente você já verá sua imagem publicada no docker hub.
 
-ATENÇÃO: Quando você for buildar sua imagem e fazer o docker push substitua rodrigordavila pelo seu usuário do dockerhub blz ?
+ATENÇÃO: Quando você for buildar sua imagem e fazer o docker push substitua rodrigordavila pelo seu usuário do dockerhub.
 
-Distribuindo a imagem
+##Distribuindo a imagem
 Agora por fim vamos criar um docker-compose.yaml para que qualquer um possa utilizar a nossa imagem
+
 ```
 services:
   app:
     image: rodrigordavila/golang
     container_name: golang
 ```
+
 Agora qualquer um que tenha esse docker-compose.yaml pode baixar a imagem e executar o container.
 
 Para baixar a imagem basta no diretório onde está o docker-comppose.yaml executar o comando:
@@ -165,13 +162,16 @@ docker-compose up -d
  ✔ Container golang  Started     
 ```
 Podemos verificar as imagens
+
 ```
 docker images                
 
 REPOSITORY              TAG       IMAGE ID       CREATED          SIZE
 rodrigordavila/golang   latest    7b31b20971ab   52 minutes ago   1.81MB
 ```
+
 E para executar o container
+
 ```
 docker run rodrigordavila/golang
 
