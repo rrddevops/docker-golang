@@ -9,7 +9,7 @@ Pra começar vamos consultar o site da Go Lang e ver como se faz um Hello World:
 
 O primeiro passo será criar uma pasta vamos chamar de essa pasta com o nome de docker-golang:
 
-```
+```bash
 mkdir docker-golang
 
 cd docker-golang
@@ -17,13 +17,13 @@ cd docker-golang
 
 Dentro dessa pasta vamos inicializar uma aplicação go:
 
-```
+```bash
 go mod init main
 ```
 
 Agora vamos criar um arquivo chamado main.go com o seguinte conteúdo:
 
-```
+```bash
 package main
 
 import "fmt"
@@ -35,7 +35,7 @@ func main() {
 
 Podemos executar nossa aplicação:
 
-```
+```bash
 go run .
 
 Full Cycle Rocks!!
@@ -44,7 +44,7 @@ Full Cycle Rocks!!
 ##Criando a imagem para o container
 Agora queremos criar uma imagem docker para o nosso container, sendo assim vamos criar um Dockerfile
 
-```
+```bash
 FROM golang:1.21
 WORKDIR /usr/src/app
 COPY . .
@@ -55,21 +55,21 @@ CMD ["app"]
 
 Vamos buildar a nossa imagem
 
-```
+```bash
 docker build -t rodrigordavila/golang:latest .
 ```
 
 Podemos conferir se a imagem foi criada
 
-```
+```bash
 docker images                      
 REPOSITORY               TAG       IMAGE ID       CREATED             SIZE
 rodrigordavila/golang:latest       latest    bce6cf8d8c75   15 minutes ago   841MB
 ```
 
-E executar a nossa imagem
+Execute nossa imagem:
 
-```
+```bash
 docker run rodrigordavila/golang    
 Full Cycle Rocks!!
 ```
@@ -85,7 +85,7 @@ Também vamos utilizar na imagem de build uma versão mais enxuta chamada alpine
 
 ##Então pra começar vamos alterar o nosso Dockerfile
 
-```
+```bash
 FROM golang:1.21-alpine AS builder
 WORKDIR /usr/src/app
 COPY . .
@@ -98,20 +98,22 @@ CMD ["/usr/local/bin/app"]
 
 ##Após a alteração vamos buildar novamente
 
+```bash
 docker build -t rodrigordavila/golang:latest .
-
-E podemos ver que o tamanho da imagem foi significativamente reduzido
-
 ```
+
+Agora podemos ver que o tamanho da imagem foi significativamente reduzido:
+
+```bash
 docker images
 
 REPOSITORY               TAG       IMAGE ID       CREATED              SIZE
 rodrigordavila/golang   latest    7b31b20971ab   15 minutes ago   1.81MB
 ```
 
-Agora podemos conferir a execução
+Podemos conferir a execução:
 
-```
+```bash
 docker run rodrigordavila/golang                    
 
 Full Cycle Rocks!!
@@ -124,7 +126,7 @@ Primeiramente se você não tem uma conta no docker hub criee uma.
 
 E faça login na sua máquina utilizando seu usuário e senha do docker hub
 
-```
+```bash
 docker login -u seu-usuario-docker-hub
 Password:
 ```
@@ -133,9 +135,9 @@ Digite seu username do docker hub e sua senha.
 
 Se tudo deu certo você deve ver a mensagem Login Succeeded
 
-Agora apenas execute um push da imagem
+Apenas execute um push da imagem:
 
-```
+```bash
 docker push rodrigordavila/golang:latest
 ```
 
@@ -146,7 +148,7 @@ ATENÇÃO: Quando você for buildar sua imagem e fazer o docker push substitua r
 ##Distribuindo a imagem
 Agora por fim vamos criar um docker-compose.yaml para que qualquer um possa utilizar a nossa imagem
 
-```
+```bash
 services:
   app:
     image: rodrigordavila/golang
@@ -157,24 +159,24 @@ Agora qualquer um que tenha esse docker-compose.yaml pode baixar a imagem e exec
 
 Para baixar a imagem basta no diretório onde está o docker-comppose.yaml executar o comando:
 
-```
+```bash
 docker-compose up -d
 
 [+] Running 1/1
  ✔ Container golang  Started     
 ```
-Podemos verificar as imagens
+Podemos verificar as imagens:
 
-```
+```bash
 docker images                
 
 REPOSITORY              TAG       IMAGE ID       CREATED          SIZE
 rodrigordavila/golang   latest    7b31b20971ab   52 minutes ago   1.81MB
 ```
 
-E para executar o container
+Para executar o container:
 
-```
+```bash
 docker run rodrigordavila/golang
 
 Full Cycle Rocks!!
